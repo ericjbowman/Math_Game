@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.gameplay-container {
+  height: 100%;
+  width: 100%;
+}
+
+.player {
+  position: absolute;
+  bottom: 0;
+}
+
+.wall {
+  width: 100%;
+  height: 6em;
+  display: flex;
+  position: absolute;
+  top: 0;
+  /* animation: moveWall;
+  animation-iteration-count: infinite;
+  animation-duration: 5s;
+  animation-timing-function: linear; */
+}
+
+@keyframes moveWall {
+  from {
+    top: 6em; /* nav height */
+  }
+
+  to {
+    top: 100%;
+  }
+}
+
+.door {
+  width: 25%;
+  border-bottom: 2px solid white;
+  border-left: 1px solid white;
+  border-right: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 96px;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+
+
+
