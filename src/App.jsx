@@ -2,6 +2,19 @@ import {useState, useEffect, useRef} from 'react'
 import {gsap} from "gsap";
 import './App.css'
 
+const defaultGame = {
+  /* current level determines speed */
+  currentLevel: 1,
+  /* nextLevel is how many right answers player needs for next level */
+  nextLevel: 3,
+  /* Every level is faster by a factor of speedScaling */
+  speedScaling: 0.3,
+  /* player must beat x * levelScaling more levels to get to the next level */
+  levelScaling: 2,
+  /* Number of milliseconds it takes for wall to animate height of screen */
+  wallSpeed: 5000,
+}
+
 function App() {
   const playerRef = useRef()
   const [playerStats, _setPlayerStats] = useState({
@@ -11,7 +24,7 @@ function App() {
   const [playerStyle, setPlayerStyle] = useState({
     height: 50,
     width: 50,
-    color: 'red',
+    color: 'yellow',
   })
   const [playerPhysics, _setPlayerPhysics] = useState({
     x: 0,
@@ -25,35 +38,70 @@ function App() {
     choices: [0, 0, 0, 0],
   })
   const [playerLane, _setPlayerLane] = useState(0)
-  const [wallSpeed, setWallSpeed] = useState(5000)
+  const [wallSpeed, _setWallSpeed] = useState(defaultGame.wallSpeed)
+  const [nextLevel, _setNextLevel] = useState(defaultGame.nextLevel)
+  const [currentLevel, _setCurrentLevel] = useState(defaultGame.currentLevel)
+  
+  const currentLevelRef = useRef(currentLevel)
+  const nextLevelRef = useRef(nextLevel)
   const playerPhysicsRef = useRef(playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(mathProblem)
   const playerStatsRef = useRef(playerStats)
+  const wallSpeedRef = useRef(wallSpeed)
   const playerLaneRef = useRef(0)
   const wallRef = useRef()
   const gameOverModalRef = useRef()
-  let wallInterval
-  let tl
+  let tl /* gsap timeline */
+  const tlRef = useRef()
 
   useEffect(() => {
-    if (!tl) {
+    if (!tl) { /* To only trigger once */
       startGame()
     }
   }, [])
 
+  useEffect(() => {
+    if (playerStatsRef.current.right === nextLevelRef.current) {
+      tlRef.current.timeScale(1 + (currentLevelRef.current * defaultGame.speedScaling))
+      setCurrentLevel(currentLevelRef.current + 1)
+      setNextLevel(nextLevel * defaultGame.levelScaling)
+    }
+  }, [playerStats])
+
   function startGame() {
+    /* combine these to a player progress obj */
+    setPlayerStats({
+      right: 0,
+      wrong: 0,
+    })
+    setCurrentLevel(defaultGame.currentLevel)
+    setNextLevel(defaultGame.nextLevel)
+
     document.addEventListener('keypress', onKeyPress)
     document.addEventListener('keyup', onKeyUp)
-    const part2Time = (playerStyle.height + 96) / (gameplayContainerRef.current.offsetHeight / wallSpeed)
-    const part1Time = wallSpeed - part2Time
+
     tl = gsap.timeline({repeat: -1});
+    tl.timeScale(1 + ((currentLevelRef.current - 1) * defaultGame.speedScaling))
+
+    /* part2Time is the time it takes the wall to go from top of player
+       to bottom of gameplay container
+
+       part1Time is the time it takes the wall to go from the top of
+       gameplay container to top of player
+    */
+
+    const part2Time =
+      (playerStyle.height) /
+      (gameplayContainerRef.current.offsetHeight / wallSpeedRef.current)
+    const part1Time = wallSpeedRef.current - part2Time
+  
     /* Return to top after game over */
     tl.to(
       wallRef.current,
       {
         duration: 0,
-        y: 0,
+        y: 112,
       }
     )
     /* Move to top of player */
@@ -61,10 +109,9 @@ function App() {
       wallRef.current,
       {
         duration: part1Time / 1000,
-        y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height - 96}px`,
+        y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height}px`,
         ease: 'none',
         onComplete: () => {
-          /* Move to bottom of gameplay container */
           const isPlayerCorrect = isRightAnswer()
           if (isPlayerCorrect) {
             setPlayerStats({
@@ -80,14 +127,12 @@ function App() {
             tl.pause()
             document.removeEventListener('keypress', onKeyPress)
             document.removeEventListener('keyup', onKeyUp)
-            gsap.to(gameOverModalRef.current, {y: 300, ease: "elastic", duration: 1.5})
-            // setTimeout(() => {
-              
-            // })
+            gsap.to(gameOverModalRef.current, {y: gameplayContainerRef.current.offsetHeight / 2 - 56, ease: "elastic", duration: 1.5})
           }
         }
       },
     )
+    /* Move to bottom of gameplay container */
     tl.to(
       wallRef.current,
       {
@@ -100,6 +145,7 @@ function App() {
         }
       }
     )
+    tlRef.current = tl
   }
 
   useEffect(() => {
@@ -123,6 +169,9 @@ function App() {
     }
   }
 
+  /* handle state references */
+
+  /*-----------------------------------*/
   const setPlayerPhysics = (data) => {
     playerPhysicsRef.current = data
     _setPlayerPhysics(data)
@@ -142,6 +191,22 @@ function App() {
     playerLaneRef.current = data
     _setPlayerLane(data)
   }
+
+  const setWallSpeed = (data) => {
+    wallSpeedRef.current = data
+    _setWallSpeed(data)
+  }
+
+  const setCurrentLevel = (data) => {
+    currentLevelRef.current = data
+    _setCurrentLevel(data)
+  }
+
+  const setNextLevel = (data) => {
+    nextLevelRef.current = data
+    _setNextLevel(data)
+  }
+  /*-----------------------------------*/
 
   function onKeyPress(e) {
     if (e.key === 'a') { // left
@@ -224,6 +289,7 @@ function App() {
 
   function isRightAnswer() {
     const playerLane = getPlayerLane()
+    /* TO DO: move this functionality or rename function */
     setPlayerLane(playerLane)
     const playerLaneElement = document.getElementById(`door-${playerLane}`)
     const playerAnswer = playerLaneElement.innerHTML
@@ -251,11 +317,8 @@ function App() {
   }
 
   function onClickPlayAgain() {
+    /* exit modal */
     gsap.to(gameOverModalRef.current, {y: '-110%', duration: 0.3})
-    setPlayerStats({
-      right: 0,
-      wrong: 0,
-    })
     createMathProblem()
     startGame()
   }
@@ -270,7 +333,10 @@ function App() {
         </button>
       </div>
       <nav>
-        <div></div>
+        <div className='level-container'>
+          <p>Level</p>
+          <p className="score">{currentLevel}</p>
+        </div>
         <div className="problem">
           {mathProblem.problemString}
         </div>
@@ -284,7 +350,7 @@ function App() {
           className="wall"
           ref={wallRef}
           style={{
-            animationDuration: wallSpeed,
+            animationDuration: wallSpeedRef.current,
           }}
         >
           {mathProblem.choices.map((choice, i) => {
@@ -298,9 +364,11 @@ function App() {
         <div
           style={{
             transform: `translate(${playerPhysics.x}px, 0)`,
-            height: `${playerStyle.height}px`,
-            width: `${playerStyle.width}px`,
-            backgroundColor: playerStyle.color,
+            width: 0,
+            height: 0,
+            border: `${playerStyle.height / 2}px solid transparent`,
+            borderTop: 0,
+            borderBottom: `${playerStyle.height}px solid ${playerStyle.color}`,
           }}
           className="player"
           ref={playerRef}
