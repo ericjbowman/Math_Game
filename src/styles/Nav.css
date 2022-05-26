@@ -17,6 +17,7 @@ nav {
 
 .score {
   color: green;
+  filter: brightness(1.3);
   font-size: 64px;
 }
 

@@ -4,10 +4,11 @@
   color: white;
   padding: 2em;
   border: none;
-  outline-color: white;
+  outline: none;
   width: 100%;
   transition: 0.3s;
   cursor: pointer;
+  font-size: 24px;
 }
 
 .play-again-btn:hover {
@@ -15,7 +16,7 @@
 }
 
 .play-again-btn:focus {
-  outline-color: white;
+  outline: none;
 }
 
 .game-over-modal {

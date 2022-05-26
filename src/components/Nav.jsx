@@ -1,5 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
+import '../styles/Nav.css'
 
 /* Renders player level, score, and math problem */
 function Nav(props) {
