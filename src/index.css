@@ -20,6 +20,7 @@ code {
 .player {
   position: absolute;
   bottom: 0;
+  z-index: 3;
 }
 
 .wall {
@@ -28,10 +29,56 @@ code {
   display: flex;
   position: absolute;
   top: 0;
+  z-index: 2;
   /* animation: moveWall;
   animation-iteration-count: infinite;
   animation-duration: 5s;
   animation-timing-function: linear; */
+}
+
+.play-again-btn {
+  background-color: green;
+  border-radius: none;
+  color: white;
+  padding: 2em;
+  border: none;
+  outline-color: white;
+  width: 100%;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.play-again-btn:hover {
+  filter: brightness(1.3);
+}
+
+.play-again-btn:focus {
+  outline-color: white;
+}
+
+.overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: url(scanlines.png);
+  background-size: cover;
+  z-index: 4;
+  transform: none !important;
+}
+
+.game-over-modal {
+  background: white;
+  left: 50%;
+  transform: translate(-50%, -500px);
+  position: fixed;
+  width: 20em;
+  padding: 1em;
+  z-index: 5;
+}
+
+.game-over-modal > p {
+  font-size: 36px;
+  margin: 0 0 1em;
 }
 
 @keyframes moveWall {
@@ -54,6 +101,14 @@ code {
   align-items: center;
   color: white;
   font-size: 96px;
+}
+
+.door:first-of-type {
+  border-left: none;
+}
+
+.door:last-of-type {
+  border-right: none;
 }
 
 html, body, #root {

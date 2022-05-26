@@ -24,75 +24,83 @@ function App() {
     answer: 0,
     choices: [0, 0, 0, 0],
   })
+  const [playerLane, _setPlayerLane] = useState(0)
   const [wallSpeed, setWallSpeed] = useState(5000)
   const playerPhysicsRef = useRef(playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(mathProblem)
   const playerStatsRef = useRef(playerStats)
+  const playerLaneRef = useRef(0)
   const wallRef = useRef()
+  const gameOverModalRef = useRef()
   let wallInterval
   let tl
 
   useEffect(() => {
+    if (!tl) {
+      startGame()
+    }
+  }, [])
+
+  function startGame() {
     document.addEventListener('keypress', onKeyPress)
     document.addEventListener('keyup', onKeyUp)
     const part2Time = (playerStyle.height + 96) / (gameplayContainerRef.current.offsetHeight / wallSpeed)
     const part1Time = wallSpeed - part2Time
-    if (!tl) {
-      tl = gsap.timeline({repeat: -1});
-      tl.to(
-        wallRef.current,
-        {
-          duration: part1Time / 1000,
-          y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height - 96}px`,
-          ease: 'none',
-          onComplete: () => {
-            const isPlayerCorrect = isRightAnswer()
-            if (isPlayerCorrect) {
-              setPlayerStats({
-                ...playerStatsRef.current,
-                right: playerStatsRef.current.right + 1
-              })
-            } else {
-              setPlayerStats({
-                ...playerStatsRef.current,
-                wrong: playerStatsRef.current.wrong + 1
-              })
-              tl.pause()
-            }
-          }
-        },
-      )
-      tl.to(
-        wallRef.current,
-        {
-          duration: part2Time / 1000,
-          y: `${gameplayContainerRef.current.offsetHeight}px`,
-          ease: 'none',
-          onComplete: () => {
-            createMathProblem()
+    tl = gsap.timeline({repeat: -1});
+    /* Return to top after game over */
+    tl.to(
+      wallRef.current,
+      {
+        duration: 0,
+        y: 0,
+      }
+    )
+    /* Move to top of player */
+    tl.to(
+      wallRef.current,
+      {
+        duration: part1Time / 1000,
+        y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height - 96}px`,
+        ease: 'none',
+        onComplete: () => {
+          /* Move to bottom of gameplay container */
+          const isPlayerCorrect = isRightAnswer()
+          if (isPlayerCorrect) {
+            setPlayerStats({
+              ...playerStatsRef.current,
+              right: playerStatsRef.current.right + 1
+            })
+            gsap.to(document.getElementById(`door-${playerLaneRef.current}`), {borderColor: 'black', duration: 0.3})
+          } else {
+            setPlayerStats({
+              ...playerStatsRef.current,
+              wrong: playerStatsRef.current.wrong + 1
+            })
+            tl.pause()
+            document.removeEventListener('keypress', onKeyPress)
+            document.removeEventListener('keyup', onKeyUp)
+            gsap.to(gameOverModalRef.current, {y: 300, ease: "elastic", duration: 1.5})
+            // setTimeout(() => {
+              
+            // })
           }
         }
-      )
-    }
-    // if (!wallInterval) {
-    //   wallInterval = setInterval(() => {
-    //     const isPlayerCorrect = isRightAnswer()
-    //     if (isPlayerCorrect) {
-    //       setPlayerStats({
-    //         ...playerStatsRef.current,
-    //         right: playerStatsRef.current.right + 1
-    //       })
-    //       createMathProblem()
-    //     } else {
-    //       setPlayerStats({
-    //         ...playerStatsRef.current,
-    //         wrong: playerStatsRef.current.wrong + 1
-    //       })
-    //     }
-    //   }, wallSpeed)
-    // }
-  }, [])
+      },
+    )
+    tl.to(
+      wallRef.current,
+      {
+        duration: part2Time / 1000,
+        y: `${gameplayContainerRef.current.offsetHeight}px`,
+        ease: 'none',
+        onComplete: () => {
+          createMathProblem()
+          gsap.to(document.getElementById(`door-${playerLaneRef.current}`), {borderColor: 'white', duration: 0.1})
+        }
+      }
+    )
+  }
 
   useEffect(() => {
     movePlayer()
@@ -128,6 +136,11 @@ function App() {
   const setPlayerStats = (data) => {
     playerStatsRef.current = data
     _setPlayerStats(data)
+  }
+
+  const setPlayerLane = (data) => {
+    playerLaneRef.current = data
+    _setPlayerLane(data)
   }
 
   function onKeyPress(e) {
@@ -211,6 +224,7 @@ function App() {
 
   function isRightAnswer() {
     const playerLane = getPlayerLane()
+    setPlayerLane(playerLane)
     const playerLaneElement = document.getElementById(`door-${playerLane}`)
     const playerAnswer = playerLaneElement.innerHTML
     if (playerAnswer == mathProblemRef.current.answer) {
@@ -236,11 +250,33 @@ function App() {
     }
   }
 
+  function onClickPlayAgain() {
+    gsap.to(gameOverModalRef.current, {y: '-110%', duration: 0.3})
+    setPlayerStats({
+      right: 0,
+      wrong: 0,
+    })
+    createMathProblem()
+    startGame()
+  }
+
   return (
     <div className="App">
+      {/* <div className='overlay' /> */}
+      <div className="game-over-modal" ref={gameOverModalRef}>
+        <p>Game Over</p>
+        <button onClick={onClickPlayAgain} className='play-again-btn'>
+          Play Again
+        </button>
+      </div>
       <nav>
+        <div></div>
         <div className="problem">
           {mathProblem.problemString}
+        </div>
+        <div className="score-container">
+          <p>Score</p>
+          <p className="score">{playerStats.right}</p>
         </div>
       </nav>
       <div className="gameplay-container" ref={gameplayContainerRef}>

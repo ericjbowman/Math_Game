@@ -46,6 +46,22 @@ button {
 
 nav {
   height: 6em;
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.score-container p {
+  margin: 8px 16px 0;
+}
+
+.score-container > p:first-child {
+  color: white;
+}
+
+.score {
+  color: green;
+  font-size: 64px;
 }
 
 .problem {
