@@ -30,37 +30,68 @@ function App() {
   const mathProblemRef = useRef(mathProblem)
   const playerStatsRef = useRef(playerStats)
   const wallRef = useRef()
-  let intervalId
+  let wallInterval
+  let tl
 
   useEffect(() => {
     document.addEventListener('keypress', onKeyPress)
     document.addEventListener('keyup', onKeyUp)
-    gsap.to(
-      wallRef.current,
-      {
-        duration: wallSpeed / 1000,
-        y: `${gameplayContainerRef.current.offsetHeight}px`,
-        ease: 'none',
-        repeat: -1
-      },
-    );
-    if (!intervalId) {
-      intervalId = setInterval(() => {
-        const isPlayerCorrect = isRightAnswer()
-        if (isPlayerCorrect) {
-          setPlayerStats({
-            ...playerStatsRef.current,
-            right: playerStatsRef.current.right + 1
-          })
-          createMathProblem()
-        } else {
-          setPlayerStats({
-            ...playerStatsRef.current,
-            wrong: playerStatsRef.current.wrong + 1
-          })
+    const part2Time = (playerStyle.height + 96) / (gameplayContainerRef.current.offsetHeight / wallSpeed)
+    const part1Time = wallSpeed - part2Time
+    if (!tl) {
+      tl = gsap.timeline({repeat: -1});
+      tl.to(
+        wallRef.current,
+        {
+          duration: part1Time / 1000,
+          y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height - 96}px`,
+          ease: 'none',
+          onComplete: () => {
+            const isPlayerCorrect = isRightAnswer()
+            if (isPlayerCorrect) {
+              setPlayerStats({
+                ...playerStatsRef.current,
+                right: playerStatsRef.current.right + 1
+              })
+            } else {
+              setPlayerStats({
+                ...playerStatsRef.current,
+                wrong: playerStatsRef.current.wrong + 1
+              })
+              tl.pause()
+            }
+          }
+        },
+      )
+      tl.to(
+        wallRef.current,
+        {
+          duration: part2Time / 1000,
+          y: `${gameplayContainerRef.current.offsetHeight}px`,
+          ease: 'none',
+          onComplete: () => {
+            createMathProblem()
+          }
         }
-      }, wallSpeed)
+      )
     }
+    // if (!wallInterval) {
+    //   wallInterval = setInterval(() => {
+    //     const isPlayerCorrect = isRightAnswer()
+    //     if (isPlayerCorrect) {
+    //       setPlayerStats({
+    //         ...playerStatsRef.current,
+    //         right: playerStatsRef.current.right + 1
+    //       })
+    //       createMathProblem()
+    //     } else {
+    //       setPlayerStats({
+    //         ...playerStatsRef.current,
+    //         wrong: playerStatsRef.current.wrong + 1
+    //       })
+    //     }
+    //   }, wallSpeed)
+    // }
   }, [])
 
   useEffect(() => {
