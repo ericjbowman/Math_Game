@@ -1,0 +1,26 @@
+nav {
+  height: 6em;
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  background: rgb(50, 50, 50);
+  /* padding-bottom: 1em; */
+}
+
+.score-container p, .level-container p {
+  margin: 8px 16px 0;
+}
+
+.score-container > p:first-child, .level-container > p:first-child {
+  color: white;
+}
+
+.score {
+  color: green;
+  font-size: 64px;
+}
+
+.problem {
+  color: white;
+  font-size: 96px;
+}

@@ -8,4 +8,4 @@ a: left
 d: right
 
 <h3>How to run locally</h3>
-> npm run dev
+npm run dev

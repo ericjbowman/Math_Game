@@ -5,68 +5,53 @@
   background: black;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.player {
+  position: absolute;
+  bottom: 0;
+  z-index: 3;
+  background-image: url("../images/Lo_Fi_Ship_2.png");
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-button {
-  font-size: calc(10px + 2vmin);
-}
-
-nav {
+.wall {
+  width: 100%;
   height: 6em;
   display: flex;
-  justify-content: space-between;
-  flex: 1;
-  background: rgb(50, 50, 50);
-  /* padding-bottom: 1em; */
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  transform: translate(0, 112px);
+  /* animation: moveWall;
+  animation-iteration-count: infinite;
+  animation-duration: 5s;
+  animation-timing-function: linear; */
 }
 
-.score-container p, .level-container p {
-  margin: 8px 16px 0;
+.overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: url('../images/CRT.png');
+  background-size: cover;
+  z-index: 4;
+  transform: none !important;
 }
 
-.score-container > p:first-child, .level-container > p:first-child {
-  color: white;
-}
-
-.score {
-  color: green;
-  font-size: 64px;
-}
-
-.problem {
+.door {
+  width: 25%;
+  border-bottom: 4px solid white;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: white;
   font-size: 96px;
+}
+
+.door:first-of-type {
+  border-left: none;
+}
+
+.door:last-of-type {
+  border-right: none;
 }
