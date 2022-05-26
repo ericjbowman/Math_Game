@@ -92,7 +92,7 @@ function App() {
     */
 
     const part2Time =
-      (playerStyle.height) /
+      (playerStyle.height + 96) /
       (gameplayContainerRef.current.offsetHeight / wallSpeedRef.current)
     const part1Time = wallSpeedRef.current - part2Time
   
@@ -101,7 +101,7 @@ function App() {
       wallRef.current,
       {
         duration: 0,
-        y: 112,
+        y: 96,
       }
     )
     /* Move to top of player */
@@ -137,7 +137,7 @@ function App() {
       wallRef.current,
       {
         duration: part2Time / 1000,
-        y: `${gameplayContainerRef.current.offsetHeight}px`,
+        y: `${gameplayContainerRef.current.offsetHeight + 96}px`,
         ease: 'none',
         onComplete: () => {
           createMathProblem()
@@ -364,11 +364,13 @@ function App() {
         <div
           style={{
             transform: `translate(${playerPhysics.x}px, 0)`,
-            width: 0,
-            height: 0,
-            border: `${playerStyle.height / 2}px solid transparent`,
-            borderTop: 0,
-            borderBottom: `${playerStyle.height}px solid ${playerStyle.color}`,
+            width: `${playerStyle.width}px`,
+            height: `${playerStyle.height}px`,
+            // width: 0,
+            // height: 0,
+            // border: `${playerStyle.height / 2}px solid transparent`,
+            // borderTop: 0,
+            // borderBottom: `${playerStyle.height}px solid ${playerStyle.color}`,
           }}
           className="player"
           ref={playerRef}

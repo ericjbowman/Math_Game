@@ -21,6 +21,7 @@ code {
   position: absolute;
   bottom: 0;
   z-index: 3;
+  background-image: url("Lo_Fi_Ship_2.png");;
 }
 
 .wall {
@@ -61,7 +62,7 @@ code {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background: url(scanlines.png);
+  background: url(CRT.png);
   background-size: cover;
   z-index: 4;
   transform: none !important;
@@ -94,9 +95,9 @@ code {
 
 .door {
   width: 25%;
-  border-bottom: 2px solid white;
-  border-left: 1px solid white;
-  border-right: 1px solid white;
+  border-bottom: 4px solid white;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -115,6 +116,16 @@ code {
 html, body, #root {
   height: 100%;
   width: 100%;
+}
+
+@font-face {
+  font-family: '04B_03';
+  src: url('04B_03__.ttf') format('truetype');
+}
+
+* {
+  /* font-family: 'Press Start 2P', monospace; */
+  font-family: '04B_03'
 }
 
 

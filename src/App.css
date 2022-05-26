@@ -50,7 +50,7 @@ nav {
   justify-content: space-between;
   flex: 1;
   background: rgb(50, 50, 50);
-  padding-bottom: 1em;
+  /* padding-bottom: 1em; */
 }
 
 .score-container p, .level-container p {
