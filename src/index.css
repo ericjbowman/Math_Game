@@ -26,7 +26,7 @@ code {
   position: absolute;
   bottom: 0;
   z-index: 3;
-  background-image: url("Lo_Fi_Ship_2.png");;
+  background-image: url("./images/Lo_Fi_Ship_2.png");
 }
 
 .wall {
@@ -67,7 +67,7 @@ code {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background: url(CRT.png);
+  background: url('./images/CRT.png');
   background-size: cover;
   z-index: 4;
   transform: none !important;
@@ -125,7 +125,7 @@ html, body, #root {
 
 @font-face {
   font-family: '04B_03';
-  src: url('04B_03__.ttf') format('truetype');
+  src: url('./fonts/04B_03__.ttf') format('truetype');
 }
 
 * {
