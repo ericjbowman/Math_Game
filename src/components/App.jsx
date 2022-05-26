@@ -1,10 +1,12 @@
 /* Dependencies */
 import {useState, useEffect, useRef} from 'react'
+import Helpers from '../Helpers'
 import {connect} from 'react-redux'
 import {gsap} from "gsap";
 
 /* Components */
-import Player from './Player'
+import Modal from './Modal'
+import Nav from './Nav'
 
 /* Actions */
 import {storePayload} from '../actions/storePayload'
@@ -12,29 +14,18 @@ import {storePayload} from '../actions/storePayload'
 /* Styles */
 import '../styles/App.css'
 
-const defaultGame = {
-  /* current level determines speed */
-  currentLevel: 1,
-  /* nextLevel is how many right answers player needs for next level */
-  nextLevel: 3,
-  /* Every level is faster by a factor of speedScaling */
-  speedScaling: 0.3,
-  /* player must beat x * levelScaling more levels to get to the next level */
-  levelScaling: 2,
-  /* Number of milliseconds it takes for wall to animate height of screen */
-  wallSpeed: 5000,
-}
-
+/* App handles:
+    -player rendering
+    -collision detection
+    -math problem generation
+    -wall rendering and animations
+    -play again functionality
+*/
 function App(props) {
   const playerRef = useRef()
-  const [playerStats, _setPlayerStats] = useState({
-    right: 0,
-    wrong: 0,
-  })
   const [playerStyle, setPlayerStyle] = useState({
     height: 50,
     width: 50,
-    color: 'yellow',
   })
   const [playerPhysics, _setPlayerPhysics] = useState({
     x: 0,
@@ -42,23 +33,11 @@ function App(props) {
     left: false,
     right: false,
   })
-  const [mathProblem, _setMathProblem] = useState({
-    problemString: '0 + 0 = ?',
-    answer: 0,
-    choices: [0, 0, 0, 0],
-  })
   const [playerLane, _setPlayerLane] = useState(0)
-  const [wallSpeed, _setWallSpeed] = useState(defaultGame.wallSpeed)
-  const [nextLevel, _setNextLevel] = useState(defaultGame.nextLevel)
-  const [currentLevel, _setCurrentLevel] = useState(defaultGame.currentLevel)
-  
-  const currentLevelRef = useRef(currentLevel)
-  const nextLevelRef = useRef(nextLevel)
   const playerPhysicsRef = useRef(playerPhysics)
   const gameplayContainerRef = useRef()
-  const mathProblemRef = useRef(mathProblem)
-  const playerStatsRef = useRef(playerStats)
-  const wallSpeedRef = useRef(wallSpeed)
+  const mathProblemRef = useRef(props.mathProblem)
+  const playerStatsRef = useRef(props.playerStats)
   const playerLaneRef = useRef(0)
   const wallRef = useRef()
   const gameOverModalRef = useRef()
@@ -72,27 +51,34 @@ function App(props) {
   }, [])
 
   useEffect(() => {
-    if (playerStatsRef.current.right === nextLevelRef.current) {
-      tlRef.current.timeScale(1 + (currentLevelRef.current * defaultGame.speedScaling))
-      setCurrentLevel(currentLevelRef.current + 1)
-      setNextLevel(nextLevel * defaultGame.levelScaling)
+    if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) {
+      tlRef.current.timeScale(1 + (playerStatsRef.current.currentLevel * props.defaultGame.speedScaling))
+      setPlayerStats({
+        ...playerStatsRef.current,
+        currentLevel: playerStatsRef.current.currentLevel + 1,
+        nextLevel: playerStatsRef.current.nextLevel * props.defaultGame.levelScaling
+      })
     }
-  }, [playerStats])
+  }, [props.playerStats])
 
   function startGame() {
-    /* combine these to a player progress obj */
+    /* Reset player stats */
     setPlayerStats({
       right: 0,
       wrong: 0,
+      currentLevel: props.defaultGame.currentLevel,
+      nextLevel: props.defaultGame.nextLevel
     })
-    setCurrentLevel(defaultGame.currentLevel)
-    setNextLevel(defaultGame.nextLevel)
 
+    /* Reattach key listeners */
     document.addEventListener('keypress', onKeyPress)
     document.addEventListener('keyup', onKeyUp)
 
+    /* Move wall */
     tl = gsap.timeline({repeat: -1});
-    tl.timeScale(1 + ((currentLevelRef.current - 1) * defaultGame.speedScaling))
+
+    /* Scale wall animation to current level */
+    tl.timeScale(1 + ((playerStatsRef.current.currentLevel - 1) * props.defaultGame.speedScaling))
 
     /* part2Time is the time it takes the wall to go from top of player
        to bottom of gameplay container
@@ -103,8 +89,8 @@ function App(props) {
 
     const part2Time =
       (playerStyle.height + 96) /
-      (gameplayContainerRef.current.offsetHeight / wallSpeedRef.current)
-    const part1Time = wallSpeedRef.current - part2Time
+      (gameplayContainerRef.current.offsetHeight / props.defaultGame.wallSpeed)
+    const part1Time = props.defaultGame.wallSpeed - part2Time
   
     /* Return to top after game over */
     tl.to(
@@ -160,28 +146,30 @@ function App(props) {
 
   useEffect(() => {
     movePlayer()
-  }, [playerPhysics])
+  }, [])
 
   function movePlayer() {
     const isNotAtRightLimit =
       playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
     const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
-    if (playerPhysics.right && isNotAtRightLimit) {
+    if (playerPhysicsRef.current.right && isNotAtRightLimit) {
       setPlayerPhysics({
         ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x + 1
+        x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
       })
-    } else if (playerPhysics.left && isNotAtLeftLimit) {
+    } else if (playerPhysicsRef.current.left && isNotAtLeftLimit) {
       setPlayerPhysics({
         ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x - 1
+        x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
       })
     }
+    setTimeout(() => {
+      window.requestAnimationFrame(movePlayer)
+    }, props.defaultGame.frameRate)
   }
 
-  /* handle state references */
-
-  /*-----------------------------------*/
+  /* handle state references
+  -----------------------------------*/
   const setPlayerPhysics = (data) => {
     playerPhysicsRef.current = data
     _setPlayerPhysics(data)
@@ -189,32 +177,21 @@ function App(props) {
 
   const setMathProblem = (data) => {
     mathProblemRef.current = data
-    _setMathProblem(data)
+    props.storePayload({
+      mathProblem: data,
+    })
   }
 
   const setPlayerStats = (data) => {
     playerStatsRef.current = data
-    _setPlayerStats(data)
+    props.storePayload({
+      playerStats: data,
+    })
   }
 
   const setPlayerLane = (data) => {
     playerLaneRef.current = data
     _setPlayerLane(data)
-  }
-
-  const setWallSpeed = (data) => {
-    wallSpeedRef.current = data
-    _setWallSpeed(data)
-  }
-
-  const setCurrentLevel = (data) => {
-    currentLevelRef.current = data
-    _setCurrentLevel(data)
-  }
-
-  const setNextLevel = (data) => {
-    nextLevelRef.current = data
-    _setNextLevel(data)
   }
   /*-----------------------------------*/
 
@@ -249,6 +226,7 @@ function App(props) {
   }
 
   function createMathProblem() {
+    const {randomIntFromInterval, shuffle} = Helpers
     const min = 0
     const max = 9
     const operators = ['+', '-']
@@ -275,28 +253,6 @@ function App(props) {
     })
   }
 
-  function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
-  
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-  
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-  
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-  
-    return array;
-  }
-
-  function randomIntFromInterval(min, max) { // min and max included 
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
   function isRightAnswer() {
     const playerLane = getPlayerLane()
     /* TO DO: move this functionality or rename function */
@@ -304,10 +260,10 @@ function App(props) {
     const playerLaneElement = document.getElementById(`door-${playerLane}`)
     const playerAnswer = playerLaneElement.innerHTML
     if (playerAnswer == mathProblemRef.current.answer) {
-      console.log('correct')
+      // console.log('correct')
       return true
     } else {
-      console.log('incorrect')
+      // console.log('incorrect')
       return false
     }
   }
@@ -336,34 +292,17 @@ function App(props) {
   return (
     <div className="App">
       {/* <div className='overlay' /> */}
-      <div className="game-over-modal" ref={gameOverModalRef}>
-        <p>Game Over</p>
-        <button onClick={onClickPlayAgain} className='play-again-btn'>
-          Play Again
-        </button>
-      </div>
-      <nav>
-        <div className='level-container'>
-          <p>Level</p>
-          <p className="score">{currentLevel}</p>
-        </div>
-        <div className="problem">
-          {mathProblem.problemString}
-        </div>
-        <div className="score-container">
-          <p>Score</p>
-          <p className="score">{playerStats.right}</p>
-        </div>
-      </nav>
+      <Modal
+        onClickPlayAgain={onClickPlayAgain}
+        gameOverModalRef={gameOverModalRef}
+      />
+      <Nav />
       <div className="gameplay-container" ref={gameplayContainerRef}>
         <div
           className="wall"
           ref={wallRef}
-          style={{
-            animationDuration: wallSpeedRef.current,
-          }}
         >
-          {mathProblem.choices.map((choice, i) => {
+          {props.mathProblem.choices.map((choice, i) => {
             return (
               <div key={`door-${i}`} id={`door-${i}`} className="door">
                 {choice}
@@ -392,8 +331,10 @@ function App(props) {
 
 const mapStateToProps = (state) => ({
   defaultGame: state.userReducer.defaultGame,
+  playerStats: state.userReducer.playerStats,
   playerStyle: state.userReducer.playerStyle,
   playerPhysics: state.userReducer.playerPhysics,
+  mathProblem: state.userReducer.mathProblem,
 })
 
 export default connect(

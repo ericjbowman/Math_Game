@@ -12,17 +12,21 @@ const initialState = {
     levelScaling: 2,
     /* Number of milliseconds it takes for wall to animate height of screen */
     wallSpeed: 5000,
+    /* milliseconds until next player movement */
+    frameRate: 10,
+    /* pixels moved every frame */
+    playerSpeed: 10,
   },
-  playerPhysics: {
-    x: 0,
-    y: 0,
-    left: false,
-    right: false,
+  mathProblem: {
+    problemString: '0 + 0 = ?',
+    answer: 0,
+    choices: [0, 0, 0, 0],
   },
-  playerStyle: {
-    height: 50,
-    width: 50,
-    // color: 'yellow',
+  playerStats: {
+    right: 0,
+    wrong: 0,
+    currentLevel: 1,
+    nextLevel: 3,
   }
 }
 
