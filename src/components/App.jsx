@@ -48,16 +48,22 @@ function App(props) {
 
   useEffect(() => {
     if (!tl) { /* To only trigger once */
+      /* Set player stats, attach key listeners, animate wall */
       startGame()
+      /* Starts continuous function that checks for player physics */
+      movePlayer()
     }
   }, [])
 
   useEffect(() => {
-    if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) {
+    if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) { // next level
+      /* Play sfx after correct answer sound */
       setTimeout(() => {
         sfx.newLvl.play()
       }, [500])
+      /* Speed up wall */
       tlRef.current.timeScale(1 + (playerStatsRef.current.currentLevel * props.defaultGame.speedScaling))
+      /* Update currentlevel, update next level threshold */
       setPlayerStats({
         ...playerStatsRef.current,
         currentLevel: playerStatsRef.current.currentLevel + 1,
@@ -133,7 +139,7 @@ function App(props) {
             tl.pause()
             document.removeEventListener('keypress', onKeyPress)
             document.removeEventListener('keyup', onKeyUp)
-            gsap.to(gameOverModalRef.current, {y: gameplayContainerRef.current.offsetHeight / 2 - 56, ease: "elastic", duration: 1.5})
+            gsap.to(gameOverModalRef.current, {opacity: 1, y: gameplayContainerRef.current.offsetHeight / 2 - 56, duration: 0.3})
           }
         }
       },
@@ -153,10 +159,6 @@ function App(props) {
     )
     tlRef.current = tl
   }
-
-  useEffect(() => {
-    movePlayer()
-  }, [])
 
   function movePlayer() {
     const isNotAtRightLimit =
@@ -274,7 +276,6 @@ function App(props) {
   function isRightAnswer() {
     const playerLane = getPlayerLane()
     /* TO DO: move this functionality or rename function */
-    setPlayerLane(playerLane)
     const playerLaneElement = document.getElementById(`door-${playerLane}`)
     const playerAnswer = playerLaneElement.innerHTML
     if (playerAnswer == mathProblemRef.current.answer) {
@@ -289,20 +290,23 @@ function App(props) {
   function getPlayerLane() {
     const gameplayContainerWidth = gameplayContainerRef.current.offsetWidth
     const laneWidth = gameplayContainerWidth / 4
+    let lane
     if (playerPhysicsRef.current.x < laneWidth) {
-      return 0
+      lane = 0
     } else if (playerPhysicsRef.current.x < laneWidth * 2) {
-      return 1
+      lane = 1
     } else if (playerPhysicsRef.current.x < laneWidth * 3) {
-      return 2
+      lane = 2
     } else {
-      return 3
+      lane = 3
     }
+    setPlayerLane(lane)
+    return lane
   }
 
   function onClickPlayAgain() {
     /* exit modal */
-    gsap.to(gameOverModalRef.current, {y: '-110%', duration: 0.3})
+    gsap.to(gameOverModalRef.current, {y: '-110%', opacity: 0, duration: 0.3})
     createMathProblem()
     startGame()
   }
