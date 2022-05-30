@@ -9,6 +9,3 @@ d: right
 
 <h3>How to run locally</h3>
 npm run dev
-
-<h3>Deployment</h3>
-incandescent-raindrop-ae793a.netlify.app
