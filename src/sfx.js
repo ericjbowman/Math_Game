@@ -1,10 +1,10 @@
 const sfx = {
-  correctAns: new Audio('src/sounds/Correct_Ans_2_Raw.mp3'),
-  playerCrash: new Audio('src/sounds/Crash_Raw.mp3'),
-  newLvl: new Audio('src/sounds/New_Lvl_Raw.mp3'),
+  correctAns: new Audio('Correct_Ans_2_Raw.mp3'),
+  playerCrash: new Audio('Crash_Raw.mp3'),
+  newLvl: new Audio('New_Lvl_Raw.mp3'),
   // correctAns: new Audio({
   //   volume: 0.5,
-  //   src: 'src/sounds/Correct_Ans_2_Raw.mp3',
+  //   src: 'Correct_Ans_2_Raw.mp3',
   // })
 }
 

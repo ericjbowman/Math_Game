@@ -29,7 +29,7 @@ html, body, #root {
 
 @font-face {
   font-family: '04B_03';
-  src: url('./fonts/04B_03__.ttf') format('truetype');
+  src: url('../04B_03__.ttf') format('truetype');
 }
 
 * {
