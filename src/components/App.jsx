@@ -115,6 +115,7 @@ function App(props) {
         onComplete: () => {
           const isPlayerCorrect = isRightAnswer()
           if (isPlayerCorrect) {
+            /* Play correct answer noise, update score, animate wall to bottom of screen */
             sfx.correctAns.play()
             setPlayerStats({
               ...playerStatsRef.current,
@@ -122,6 +123,8 @@ function App(props) {
             })
             gsap.to(document.getElementById(`door-${playerLaneRef.current}`), {borderColor: 'black', duration: 0.3})
           } else {
+            /* Crash, game over, score cleared, play again option */
+            stopPlayer()
             sfx.playerCrash.play()
             setPlayerStats({
               ...playerStatsRef.current,
@@ -173,6 +176,14 @@ function App(props) {
     setTimeout(() => {
       window.requestAnimationFrame(movePlayer)
     }, props.defaultGame.frameRate)
+  }
+
+  function stopPlayer() {
+    setPlayerPhysics({
+      ...playerPhysicsRef.current,
+      left: false,
+      right: false,
+    })
   }
 
   /* handle state references
