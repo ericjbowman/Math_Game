@@ -3,6 +3,7 @@ import {useState, useEffect, useRef} from 'react'
 import Helpers from '../Helpers'
 import {connect} from 'react-redux'
 import {gsap} from "gsap";
+import sfx from '../sfx'
 
 /* Components */
 import Modal from './Modal'
@@ -21,6 +22,7 @@ import '../styles/App.css'
     -wall rendering and animations
     -play again functionality
 */
+
 function App(props) {
   const playerRef = useRef()
   const [playerStyle, setPlayerStyle] = useState({
@@ -52,6 +54,9 @@ function App(props) {
 
   useEffect(() => {
     if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) {
+      setTimeout(() => {
+        sfx.newLvl.play()
+      }, [500])
       tlRef.current.timeScale(1 + (playerStatsRef.current.currentLevel * props.defaultGame.speedScaling))
       setPlayerStats({
         ...playerStatsRef.current,
@@ -110,12 +115,14 @@ function App(props) {
         onComplete: () => {
           const isPlayerCorrect = isRightAnswer()
           if (isPlayerCorrect) {
+            sfx.correctAns.play()
             setPlayerStats({
               ...playerStatsRef.current,
               right: playerStatsRef.current.right + 1
             })
             gsap.to(document.getElementById(`door-${playerLaneRef.current}`), {borderColor: 'black', duration: 0.3})
           } else {
+            sfx.playerCrash.play()
             setPlayerStats({
               ...playerStatsRef.current,
               wrong: playerStatsRef.current.wrong + 1
