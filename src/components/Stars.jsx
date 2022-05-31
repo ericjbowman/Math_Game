@@ -13,7 +13,6 @@ export default function Stars(props) {
       if (stars.length) {
         console.log('animating stars', stars.length)
         Array.prototype.forEach.call(stars, (star, i) => {
-          console.log('star i-', i)
           const starTime = Helpers.randomFloatFromInterval(1, 8)
           // var tl = gsap.timeline();
           const startY = props.starsData[i].co[1] * containerHeight

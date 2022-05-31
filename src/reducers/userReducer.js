@@ -27,6 +27,12 @@ const initialState = {
     wrong: 0,
     currentLevel: 1,
     nextLevel: 3,
+  },
+  playerPhysics: {
+    x: 0,
+    y: 0,
+    left: false,
+    right: false,
   }
 }
 

@@ -31,14 +31,14 @@ function App(props) {
     height: 50,
     width: 50,
   })
-  const [playerPhysics, _setPlayerPhysics] = useState({
-    x: 0,
-    y: 0,
-    left: false,
-    right: false,
-  })
+  // const [playerPhysics, _setPlayerPhysics] = useState({
+  //   x: 0,
+  //   y: 0,
+  //   left: false,
+  //   right: false,
+  // })
   const [playerLane, _setPlayerLane] = useState(0)
-  const playerPhysicsRef = useRef(playerPhysics)
+  const playerPhysicsRef = useRef(props.playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(props.mathProblem)
   const playerStatsRef = useRef(props.playerStats)
@@ -194,7 +194,10 @@ function App(props) {
   -----------------------------------*/
   const setPlayerPhysics = (data) => {
     playerPhysicsRef.current = data
-    _setPlayerPhysics(data)
+    // _setPlayerPhysics(data)
+    props.storePayload({
+      playerPhysics: data,
+    })
   }
 
   const setMathProblem = (data) => {
@@ -337,7 +340,7 @@ function App(props) {
         </div>
         <div
           style={{
-            transform: `translate(${playerPhysics.x}px, 0)`,
+            transform: `translate(${props.playerPhysics.x}px, 0)`,
             width: `${playerStyle.width}px`,
             height: `${playerStyle.height}px`,
             // width: 0,
