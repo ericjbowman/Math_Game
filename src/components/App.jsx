@@ -1,7 +1,7 @@
 /* Dependencies */
 import {useState, useEffect, useRef} from 'react'
 import Helpers from '../Helpers'
-import starDataImport from '../starDataImport'
+import starsData from '../starsData'
 import {connect} from 'react-redux'
 import {gsap} from "gsap";
 import sfx from '../sfx'
@@ -37,9 +37,6 @@ function App(props) {
     left: false,
     right: false,
   })
-  const [starsData, setStarsData] = useState(
-    starDataImport
-  )
   const [playerLane, _setPlayerLane] = useState(0)
   const playerPhysicsRef = useRef(playerPhysics)
   const gameplayContainerRef = useRef()
