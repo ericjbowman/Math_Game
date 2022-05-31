@@ -1,6 +1,6 @@
 import Helpers from './Helpers.js'
 
-const starsData = 
+const starData = 
   Array.apply(null, Array(40)).map(() => {
     return (
       {
@@ -10,4 +10,4 @@ const starsData =
     )
   })
 
-export default starsData
+export default starData

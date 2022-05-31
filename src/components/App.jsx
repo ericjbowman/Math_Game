@@ -1,7 +1,7 @@
 /* Dependencies */
 import {useState, useEffect, useRef} from 'react'
 import Helpers from '../Helpers'
-import starsData from '../starsData'
+import starData from '../StarData'
 import {connect} from 'react-redux'
 import {gsap} from "gsap";
 import sfx from '../sfx'
@@ -322,7 +322,7 @@ function App(props) {
       />
       <Nav />
       <div className="gameplay-container" ref={gameplayContainerRef}>
-        <Stars starsData={starsData}/>
+        <Stars starData={starData}/>
         <div
           className="wall"
           ref={wallRef}
