@@ -1,0 +1,14 @@
+.star-container {
+  width: 100%;
+  height: calc(100% - 96px);
+  position: absolute;
+  top: 96px;
+  left: 0;
+}
+
+.star {
+  width: 5px;
+  height: 5px;
+  background: white;
+  position: absolute;
+}
