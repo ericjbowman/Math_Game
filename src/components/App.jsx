@@ -10,6 +10,7 @@ import sfx from '../sfx'
 import Modal from './Modal'
 import Nav from './Nav'
 import Stars from './Stars'
+import Player from './Player'
 
 /* Actions */
 import {storePayload} from '../actions/storePayload'
@@ -28,17 +29,6 @@ import '../styles/App.css'
 function App(props) {
   console.log('RENDER')
   const playerRef = useRef()
-  const [playerStyle, setPlayerStyle] = useState({
-    height: 50,
-    width: 50,
-  })
-  // const [playerPhysics, _setPlayerPhysics] = useState({
-  //   x: 0,
-  //   y: 0,
-  //   left: false,
-  //   right: false,
-  // })
-  // const [playerLane, _setPlayerLane] = useState(0)
   const playerPhysicsRef = useRef(props.playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(props.mathProblem)
@@ -103,7 +93,7 @@ function App(props) {
     */
 
     const part2Time =
-      (playerStyle.height + 96) /
+      (props.playerStyle.height + 96) /
       (gameplayContainerRef.current.offsetHeight / props.defaultGame.wallSpeed)
     const part1Time = props.defaultGame.wallSpeed - part2Time
   
@@ -120,7 +110,7 @@ function App(props) {
       wallRef.current,
       {
         duration: part1Time / 1000,
-        y: `${gameplayContainerRef.current.offsetHeight - playerStyle.height}px`,
+        y: `${gameplayContainerRef.current.offsetHeight - props.playerStyle.height}px`,
         ease: 'none',
         onComplete: () => {
           const isPlayerCorrect = isRightAnswer()
@@ -166,7 +156,7 @@ function App(props) {
 
   function movePlayer() {
     const isNotAtRightLimit =
-      playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
+      playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - props.playerStyle.width
     const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
     if (playerPhysicsRef.current.right && isNotAtRightLimit) {
       setPlayerPhysics({
@@ -343,20 +333,7 @@ function App(props) {
             )
           })}
         </div>
-        <div
-          style={{
-            transform: `translate(${props.playerPhysics.x}px, 0)`,
-            width: `${playerStyle.width}px`,
-            height: `${playerStyle.height}px`,
-            // width: 0,
-            // height: 0,
-            // border: `${playerStyle.height / 2}px solid transparent`,
-            // borderTop: 0,
-            // borderBottom: `${playerStyle.height}px solid ${playerStyle.color}`,
-          }}
-          className="player"
-          ref={playerRef}
-        />
+        <Player playerRef={playerRef} />
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import Helpers from './Helpers.js'
 
 const starsData = 
-  Array.apply(null, Array(40)).map(() => {
+  Array.apply(null, Array(30)).map(() => {
     return (
       {
         size: Helpers.randomIntFromInterval(1, 6),
