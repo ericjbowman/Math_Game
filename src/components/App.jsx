@@ -26,6 +26,7 @@ import '../styles/App.css'
 */
 
 function App(props) {
+  console.log('RENDER')
   const playerRef = useRef()
   const [playerStyle, setPlayerStyle] = useState({
     height: 50,
@@ -37,18 +38,19 @@ function App(props) {
   //   left: false,
   //   right: false,
   // })
-  const [playerLane, _setPlayerLane] = useState(0)
+  // const [playerLane, _setPlayerLane] = useState(0)
   const playerPhysicsRef = useRef(props.playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(props.mathProblem)
   const playerStatsRef = useRef(props.playerStats)
-  const playerLaneRef = useRef(0)
+  const playerLaneRef = useRef(props.playerLane)
   const wallRef = useRef()
   const gameOverModalRef = useRef()
   let tl /* gsap timeline */
   const tlRef = useRef()
 
   useEffect(() => {
+    console.log('rerender')
     if (!tl) { /* To only trigger once */
       /* Set player stats, attach key listeners, animate wall */
       startGame()
@@ -216,7 +218,10 @@ function App(props) {
 
   const setPlayerLane = (data) => {
     playerLaneRef.current = data
-    _setPlayerLane(data)
+    // _setPlayerLane(data)
+    props.storePayload({
+      playerLane: data,
+    })
   }
   /*-----------------------------------*/
 
@@ -362,6 +367,7 @@ const mapStateToProps = (state) => ({
   playerStats: state.userReducer.playerStats,
   playerStyle: state.userReducer.playerStyle,
   playerPhysics: state.userReducer.playerPhysics,
+  playerLane: state.userReducer.playerLane,
   mathProblem: state.userReducer.mathProblem,
 })
 

@@ -33,7 +33,8 @@ const initialState = {
     y: 0,
     left: false,
     right: false,
-  }
+  },
+  playerLane: 0,
 }
 
 export default function(state = initialState, action) {
