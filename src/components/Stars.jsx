@@ -15,7 +15,7 @@ export default function Stars(props) {
         Array.prototype.forEach.call(stars, (star, i) => {
           const starTime = Helpers.randomFloatFromInterval(1, 8)
           // var tl = gsap.timeline();
-          const startY = props.starData[i].co[1] * containerHeight
+          const startY = Math.floor(props.starData[i].co[1] * containerHeight)
           gsap.set(star, { // set to random location
             y: startY,
           })
@@ -47,7 +47,7 @@ export default function Stars(props) {
           return (
             <div
               style={{
-                left: star.co[0] * window.innerWidth,
+                left: Math.floor(star.co[0] * window.innerWidth),
                 // top: star.co[1] * (window.innerHeight - 96),
                 // top: 0,
                 height: star.size,

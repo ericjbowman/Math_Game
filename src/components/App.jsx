@@ -8,6 +8,7 @@ import sfx from '../sfx'
 
 /* Components */
 import Modal from './Modal'
+import TitleModal from './TitleModal'
 import Nav from './Nav'
 import Stars from './Stars'
 
@@ -45,15 +46,14 @@ function App(props) {
   const playerLaneRef = useRef(0)
   const wallRef = useRef()
   const gameOverModalRef = useRef()
+  const titleModalRef = useRef()
   let tl /* gsap timeline */
   const tlRef = useRef()
 
   useEffect(() => {
     if (!tl) { /* To only trigger once */
-      /* Set player stats, attach key listeners, animate wall */
-      startGame()
-      /* Starts continuous function that checks for player physics */
-      movePlayer()
+      /* Show title modal */
+      gsap.to(titleModalRef.current, {opacity: 1, y: (gameplayContainerRef.current.offsetHeight / 2 + 48) - (titleModalRef.current.offsetHeight / 2), duration: 0.3})
     }
   }, [])
 
@@ -74,7 +74,15 @@ function App(props) {
     }
   }, [props.playerStats])
 
+  function onClickPlay() {
+    gsap.to(titleModalRef.current, {opacity: 0, y: -100, duration: 0.3})
+    createMathProblem()
+    startGame()
+  }
+
   function startGame() {
+    /* Starts continuous function that checks for player physics */
+    movePlayer()
     /* Reset player stats */
     setPlayerStats({
       right: 0,
@@ -248,9 +256,9 @@ function App(props) {
   }
 
   function createMathProblem() {
+    const {min, max, choiceRange} = props.difficultyData[props.currentDifficulty]
     const {randomIntFromInterval, shuffle} = Helpers
-    const min = 0
-    const max = 9
+
     const operators = ['+', '-']
     const firstNum = randomIntFromInterval(min, max)
     const secondNum = randomIntFromInterval(min, max)
@@ -261,11 +269,15 @@ function App(props) {
     } else {
       answer = firstNum + secondNum
     }
+    const maxAnswerDifference = choiceRange / 2
+    let minChoice = answer - maxAnswerDifference
+    let maxChoice = answer + maxAnswerDifference
+
     const choices = shuffle([
       answer,
-      randomIntFromInterval(min, max),
-      randomIntFromInterval(min, max),
-      randomIntFromInterval(min, max)
+      randomIntFromInterval(minChoice, maxChoice), // choice from full range
+      randomIntFromInterval(minChoice, answer - 1), // choice < answer
+      randomIntFromInterval(answer + 1, maxChoice) // choice > answer
     ])
     const problemString = `${firstNum} ${operators[operatorIndex]} ${secondNum} = ?`
     setMathProblem({
@@ -316,6 +328,10 @@ function App(props) {
   return (
     <div className="App">
       {/* <div className='overlay' /> */}
+      <TitleModal
+        onClickPlay={onClickPlay}
+        titleModalRef={titleModalRef}
+      />
       <Modal
         onClickPlayAgain={onClickPlayAgain}
         gameOverModalRef={gameOverModalRef}
@@ -359,6 +375,8 @@ const mapStateToProps = (state) => ({
   playerStats: state.userReducer.playerStats,
   playerStyle: state.userReducer.playerStyle,
   playerPhysics: state.userReducer.playerPhysics,
+  difficultyData: state.userReducer.difficultyData,
+  currentDifficulty: state.userReducer.currentDifficulty,
   mathProblem: state.userReducer.mathProblem,
 })
 

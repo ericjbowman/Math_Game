@@ -37,6 +37,30 @@ html, body, #root {
   font-family: '04B_03'
 }
 
+@media screen and (max-height: 800px) {
+  body {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  body {
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  body {
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  body {
+    font-size: 8px;
+  }
+}
+
 
 
 

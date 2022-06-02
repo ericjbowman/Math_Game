@@ -19,10 +19,10 @@ nav {
 .score {
   color: green;
   filter: brightness(1.3);
-  font-size: 64px;
+  font-size: 4em;
 }
 
 .problem {
   color: white;
-  font-size: 96px;
+  font-size: 6em;
 }
