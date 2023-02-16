@@ -55,7 +55,7 @@ function App(props) {
   useEffect(() => {
     if (!tl) { /* To only trigger once */
       /* Show title modal */
-      gsap.to(titleModalRef.current, {opacity: 1, y: (gameplayContainerRef.current.offsetHeight / 2 + 48) - (titleModalRef.current.offsetHeight / 2), duration: 0.3})
+      gsap.to(titleModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
     }
   }, [])
 
