@@ -29,12 +29,36 @@ html, body, #root {
 
 @font-face {
   font-family: '04B_03';
-  src: url('./fonts/04B_03__.ttf') format('truetype');
+  src: url('../04B_03__.ttf') format('truetype');
 }
 
 * {
   /* font-family: 'Press Start 2P', monospace; */
   font-family: '04B_03'
+}
+
+@media screen and (max-height: 800px) {
+  body {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  body {
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  body {
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  body {
+    font-size: 8px;
+  }
 }
 
 

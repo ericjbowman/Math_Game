@@ -9,7 +9,7 @@
   position: absolute;
   bottom: 0;
   z-index: 3;
-  background-image: url("../images/Lo_Fi_Ship_2.png");
+  background-image: url("../Lo_Fi_Ship_2.png");
 }
 
 .wall {
@@ -30,7 +30,7 @@
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background: url('../images/CRT.png');
+  background: url('CRT.png');
   background-size: cover;
   z-index: 4;
   transform: none !important;
@@ -45,7 +45,7 @@
   justify-content: center;
   align-items: center;
   color: white;
-  font-size: 96px;
+  font-size: 6em;
 }
 
 .door:first-of-type {

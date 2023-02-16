@@ -1,4 +1,4 @@
-.play-again-btn {
+.modal-btn {
   background-color: green;
   border-radius: none;
   color: white;
@@ -8,28 +8,112 @@
   width: 100%;
   transition: 0.3s;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 2em;
 }
 
-.play-again-btn:hover {
+.modal-btn:hover {
   filter: brightness(1.3);
 }
 
-.play-again-btn:focus {
+.modal-btn:focus {
   outline: none;
 }
 
-.game-over-modal {
+.modal {
   background: white;
   left: 50%;
   transform: translate(-50%, -500px);
-  position: fixed;
+  position: absolute;
   width: 20em;
   padding: 1em;
   z-index: 5;
 }
 
-.game-over-modal > p {
-  font-size: 36px;
+.title-modal {
+  width: 40em;
+}
+
+.modal > p {
+  font-size: 2.25em;
   margin: 0 0 1em;
+}
+
+.font-small {
+  font-size: 1.5em !important;
+}
+
+.font-big {
+  font-size: 4em !important;
+  margin-bottom: 0.5em !important;
+}
+
+#difficulty-form {
+  /* width: 100%; */
+  width: 10em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding-bottom: 2em;
+}
+
+.radio-btn-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.radio-btn-container input {
+  cursor: pointer;
+}
+
+input[type='radio']:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 0;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: #d1d3d1;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid black;
+}
+
+/* .game-over-modal {
+  top: 50%;
+} */
+
+input[type='radio']:checked:after {
+  width: 15px;
+  height: 15px;
+  border-radius: 0;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: blue;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid black;
+}
+
+@media screen and (max-height: 800px) {
+  .modal {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .modal {
+    font-size: 10px;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  .modal {
+    font-size: 8px;
+  }
 }

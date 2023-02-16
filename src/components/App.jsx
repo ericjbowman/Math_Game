@@ -1,12 +1,16 @@
 /* Dependencies */
 import {useState, useEffect, useRef} from 'react'
 import Helpers from '../Helpers'
+import starData from '../StarData'
 import {connect} from 'react-redux'
 import {gsap} from "gsap";
+import sfx from '../sfx'
 
 /* Components */
 import Modal from './Modal'
+import TitleModal from './TitleModal'
 import Nav from './Nav'
+import Stars from './Stars'
 
 /* Actions */
 import {storePayload} from '../actions/storePayload'
@@ -21,6 +25,7 @@ import '../styles/App.css'
     -wall rendering and animations
     -play again functionality
 */
+
 function App(props) {
   const playerRef = useRef()
   const [playerStyle, setPlayerStyle] = useState({
@@ -41,18 +46,28 @@ function App(props) {
   const playerLaneRef = useRef(0)
   const wallRef = useRef()
   const gameOverModalRef = useRef()
+  const titleModalRef = useRef()
   let tl /* gsap timeline */
+  let animationId
+  let animationInterval
   const tlRef = useRef()
 
   useEffect(() => {
     if (!tl) { /* To only trigger once */
-      startGame()
+      /* Show title modal */
+      gsap.to(titleModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
     }
   }, [])
 
   useEffect(() => {
-    if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) {
+    if (playerStatsRef.current.right === playerStatsRef.current.nextLevel) { // next level
+      /* Play sfx after correct answer sound */
+      setTimeout(() => {
+        sfx.newLvl.play()
+      }, [500])
+      /* Speed up wall */
       tlRef.current.timeScale(1 + (playerStatsRef.current.currentLevel * props.defaultGame.speedScaling))
+      /* Update currentlevel, update next level threshold */
       setPlayerStats({
         ...playerStatsRef.current,
         currentLevel: playerStatsRef.current.currentLevel + 1,
@@ -61,7 +76,15 @@ function App(props) {
     }
   }, [props.playerStats])
 
+  function onClickPlay() {
+    gsap.to(titleModalRef.current, {opacity: 0, y: -100, duration: 0.3})
+    createMathProblem()
+    startGame()
+  }
+
   function startGame() {
+    /* Starts continuous function that checks for player physics */
+    movePlayer()
     /* Reset player stats */
     setPlayerStats({
       right: 0,
@@ -110,12 +133,17 @@ function App(props) {
         onComplete: () => {
           const isPlayerCorrect = isRightAnswer()
           if (isPlayerCorrect) {
+            /* Play correct answer noise, update score, animate wall to bottom of screen */
+            sfx.correctAns.play()
             setPlayerStats({
               ...playerStatsRef.current,
               right: playerStatsRef.current.right + 1
             })
             gsap.to(document.getElementById(`door-${playerLaneRef.current}`), {borderColor: 'black', duration: 0.3})
           } else {
+            /* Crash, game over, score cleared, play again option */
+            stopPlayer()
+            sfx.playerCrash.play()
             setPlayerStats({
               ...playerStatsRef.current,
               wrong: playerStatsRef.current.wrong + 1
@@ -123,7 +151,7 @@ function App(props) {
             tl.pause()
             document.removeEventListener('keypress', onKeyPress)
             document.removeEventListener('keyup', onKeyUp)
-            gsap.to(gameOverModalRef.current, {y: gameplayContainerRef.current.offsetHeight / 2 - 56, ease: "elastic", duration: 1.5})
+            gsap.to(gameOverModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
           }
         }
       },
@@ -144,28 +172,40 @@ function App(props) {
     tlRef.current = tl
   }
 
-  useEffect(() => {
-    movePlayer()
-  }, [])
+  let lastTime
 
-  function movePlayer() {
-    const isNotAtRightLimit =
-      playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
-    const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
-    if (playerPhysicsRef.current.right && isNotAtRightLimit) {
-      setPlayerPhysics({
-        ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
-      })
-    } else if (playerPhysicsRef.current.left && isNotAtLeftLimit) {
-      setPlayerPhysics({
-        ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
-      })
+  function movePlayer(time) {
+    console.log('move player', time, lastTime)
+    const elapsedTime = time - lastTime
+    if (elapsedTime >= props.defaultGame.frameRate) {
+      console.log('moving player')
+      const isNotAtRightLimit =
+        playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
+      const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
+      if (playerPhysicsRef.current.right && isNotAtRightLimit) {
+        setPlayerPhysics({
+          ...playerPhysicsRef.current,
+          x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
+        })
+      } else if (playerPhysicsRef.current.left && isNotAtLeftLimit) {
+        setPlayerPhysics({
+          ...playerPhysicsRef.current,
+          x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
+        })
+      }
     }
-    setTimeout(() => {
-      window.requestAnimationFrame(movePlayer)
-    }, props.defaultGame.frameRate)
+
+    lastTime = time
+    animationId = window.requestAnimationFrame(movePlayer)
+  }
+
+  function stopPlayer() {
+    window.cancelAnimationFrame(animationId)
+    setPlayerPhysics({
+      ...playerPhysicsRef.current,
+      left: false,
+      right: false,
+    })
   }
 
   /* handle state references
@@ -226,9 +266,9 @@ function App(props) {
   }
 
   function createMathProblem() {
+    const {min, max, choiceRange} = props.difficultyData[props.currentDifficulty]
     const {randomIntFromInterval, shuffle} = Helpers
-    const min = 0
-    const max = 9
+
     const operators = ['+', '-']
     const firstNum = randomIntFromInterval(min, max)
     const secondNum = randomIntFromInterval(min, max)
@@ -239,11 +279,15 @@ function App(props) {
     } else {
       answer = firstNum + secondNum
     }
+    const maxAnswerDifference = choiceRange / 2
+    let minChoice = answer - maxAnswerDifference
+    let maxChoice = answer + maxAnswerDifference
+
     const choices = shuffle([
       answer,
-      randomIntFromInterval(min, max),
-      randomIntFromInterval(min, max),
-      randomIntFromInterval(min, max)
+      randomIntFromInterval(minChoice, maxChoice), // choice from full range
+      randomIntFromInterval(minChoice, answer - 1), // choice < answer
+      randomIntFromInterval(answer + 1, maxChoice) // choice > answer
     ])
     const problemString = `${firstNum} ${operators[operatorIndex]} ${secondNum} = ?`
     setMathProblem({
@@ -256,7 +300,6 @@ function App(props) {
   function isRightAnswer() {
     const playerLane = getPlayerLane()
     /* TO DO: move this functionality or rename function */
-    setPlayerLane(playerLane)
     const playerLaneElement = document.getElementById(`door-${playerLane}`)
     const playerAnswer = playerLaneElement.innerHTML
     if (playerAnswer == mathProblemRef.current.answer) {
@@ -271,20 +314,23 @@ function App(props) {
   function getPlayerLane() {
     const gameplayContainerWidth = gameplayContainerRef.current.offsetWidth
     const laneWidth = gameplayContainerWidth / 4
+    let lane
     if (playerPhysicsRef.current.x < laneWidth) {
-      return 0
+      lane = 0
     } else if (playerPhysicsRef.current.x < laneWidth * 2) {
-      return 1
+      lane = 1
     } else if (playerPhysicsRef.current.x < laneWidth * 3) {
-      return 2
+      lane = 2
     } else {
-      return 3
+      lane = 3
     }
+    setPlayerLane(lane)
+    return lane
   }
 
   function onClickPlayAgain() {
     /* exit modal */
-    gsap.to(gameOverModalRef.current, {y: '-110%', duration: 0.3})
+    gsap.to(gameOverModalRef.current, {y: '-110%', top: 0, opacity: 0, duration: 0.3})
     createMathProblem()
     startGame()
   }
@@ -292,12 +338,17 @@ function App(props) {
   return (
     <div className="App">
       {/* <div className='overlay' /> */}
+      <TitleModal
+        onClickPlay={onClickPlay}
+        titleModalRef={titleModalRef}
+      />
       <Modal
         onClickPlayAgain={onClickPlayAgain}
         gameOverModalRef={gameOverModalRef}
       />
       <Nav />
       <div className="gameplay-container" ref={gameplayContainerRef}>
+        <Stars starData={starData}/>
         <div
           className="wall"
           ref={wallRef}
@@ -334,6 +385,8 @@ const mapStateToProps = (state) => ({
   playerStats: state.userReducer.playerStats,
   playerStyle: state.userReducer.playerStyle,
   playerPhysics: state.userReducer.playerPhysics,
+  difficultyData: state.userReducer.difficultyData,
+  currentDifficulty: state.userReducer.currentDifficulty,
   mathProblem: state.userReducer.mathProblem,
 })
 
