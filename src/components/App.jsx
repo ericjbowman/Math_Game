@@ -48,6 +48,8 @@ function App(props) {
   const gameOverModalRef = useRef()
   const titleModalRef = useRef()
   let tl /* gsap timeline */
+  let animationId
+  let animationInterval
   const tlRef = useRef()
 
   useEffect(() => {
@@ -149,7 +151,7 @@ function App(props) {
             tl.pause()
             document.removeEventListener('keypress', onKeyPress)
             document.removeEventListener('keyup', onKeyUp)
-            gsap.to(gameOverModalRef.current, {opacity: 1, y: gameplayContainerRef.current.offsetHeight / 2 - 56, duration: 0.3})
+            gsap.to(gameOverModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
           }
         }
       },
@@ -170,27 +172,35 @@ function App(props) {
     tlRef.current = tl
   }
 
-  function movePlayer() {
-    const isNotAtRightLimit =
-      playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
-    const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
-    if (playerPhysicsRef.current.right && isNotAtRightLimit) {
-      setPlayerPhysics({
-        ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
-      })
-    } else if (playerPhysicsRef.current.left && isNotAtLeftLimit) {
-      setPlayerPhysics({
-        ...playerPhysicsRef.current,
-        x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
-      })
+  let lastTime
+
+  function movePlayer(time) {
+    console.log('move player', time, lastTime)
+    const elapsedTime = time - lastTime
+    if (elapsedTime >= props.defaultGame.frameRate) {
+      console.log('moving player')
+      const isNotAtRightLimit =
+        playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
+      const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
+      if (playerPhysicsRef.current.right && isNotAtRightLimit) {
+        setPlayerPhysics({
+          ...playerPhysicsRef.current,
+          x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
+        })
+      } else if (playerPhysicsRef.current.left && isNotAtLeftLimit) {
+        setPlayerPhysics({
+          ...playerPhysicsRef.current,
+          x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
+        })
+      }
     }
-    setTimeout(() => {
-      window.requestAnimationFrame(movePlayer)
-    }, props.defaultGame.frameRate)
+
+    lastTime = time
+    animationId = window.requestAnimationFrame(movePlayer)
   }
 
   function stopPlayer() {
+    window.cancelAnimationFrame(animationId)
     setPlayerPhysics({
       ...playerPhysicsRef.current,
       left: false,
@@ -320,7 +330,7 @@ function App(props) {
 
   function onClickPlayAgain() {
     /* exit modal */
-    gsap.to(gameOverModalRef.current, {y: '-110%', opacity: 0, duration: 0.3})
+    gsap.to(gameOverModalRef.current, {y: '-110%', top: 0, opacity: 0, duration: 0.3})
     createMathProblem()
     startGame()
   }

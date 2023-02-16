@@ -82,6 +82,10 @@ input[type='radio']:after {
   border: 2px solid black;
 }
 
+/* .game-over-modal {
+  top: 50%;
+} */
+
 input[type='radio']:checked:after {
   width: 15px;
   height: 15px;
