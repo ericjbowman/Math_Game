@@ -176,7 +176,7 @@ function App(props) {
   let lastTime
 
   function movePlayer(time) {
-    console.log('move player', animationId)
+    // console.log('move player', animationId)
     const elapsedTime = time - lastTime
     if (elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
@@ -236,6 +236,10 @@ function App(props) {
     _setPlayerLane(data)
   }
   /*-----------------------------------*/
+
+  useEffect(() => {
+    console.log('player physics', playerPhysicsRef.current)
+  }, [playerPhysicsRef.current])
 
   function onKeyPress(e) {
     console.log('key press', e, e.code)
