@@ -176,6 +176,7 @@ function App(props) {
   let lastTime
 
   function movePlayer(time) {
+    console.log('move player', animationId)
     const elapsedTime = time - lastTime
     if (elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
@@ -239,6 +240,7 @@ function App(props) {
   function onKeyPress(e) {
     console.log('key press', e, e.code)
     if (e.code === 'KeyA' || e.code === 'ArrowLeft') { // left (a or arrow)
+      console.log('setting player physics')
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         left: true,
