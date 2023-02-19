@@ -237,7 +237,7 @@ function App(props) {
   /*-----------------------------------*/
 
   function onKeyPress(e) {
-    console.log('key press', e, c.code)
+    console.log('key press', e, e.code)
     if (e.code === 'KeyA' || e.code === 'ArrowLeft') { // left (a or arrow)
       setPlayerPhysics({
         ...playerPhysicsRef.current,
