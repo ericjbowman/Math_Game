@@ -57,7 +57,6 @@ function App(props) {
       /* Show title modal */
       gsap.to(titleModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
     }
-    console.log('request animation frame', window.requestAnimationFrame)
   }, [])
 
   useEffect(() => {
@@ -181,8 +180,10 @@ function App(props) {
     if (elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
         playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
+      console.log('gameplay container width', gameplayContainerRef.current.offsetWidth)
       const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
       if (playerPhysicsRef.current.right && isNotAtRightLimit) {
+        console.log('moving player right', playerPhysicsRef.current.x, props.defaultGame.playerSpeed)
         setPlayerPhysics({
           ...playerPhysicsRef.current,
           x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed

@@ -13,7 +13,7 @@ const initialState = {
     /* Number of milliseconds it takes for wall to animate height of screen */
     wallSpeed: 5000,
     /* milliseconds until next player movement */
-    frameRate: 32,
+    frameRate: 16,
     /* pixels moved every frame */
     playerSpeed: 15,
   },
