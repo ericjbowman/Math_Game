@@ -6,7 +6,6 @@ import {storePayload} from '../actions/storePayload'
 function TitleModal(props) {
   function onChangeDifficulty(e) {
     const currentDifficulty = parseInt(e.target.value)
-    console.log('props', props)
     props.storePayload({
       currentDifficulty,
       /* change how much faster wall gets each level based on difficulty */

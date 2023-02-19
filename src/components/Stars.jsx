@@ -6,12 +6,10 @@ import '../styles/Stars.css'
 export default function Stars(props) {
   const starContainerRef = useRef()
   useEffect(() => {
-    console.log('use effect')
     if (starContainerRef.current) {
       const containerHeight = starContainerRef.current.offsetHeight
       const stars = document.getElementsByClassName('star')
       if (stars.length) {
-        console.log('animating stars', stars.length)
         Array.prototype.forEach.call(stars, (star, i) => {
           const starTime = Helpers.randomFloatFromInterval(1, 8)
           // var tl = gsap.timeline();
