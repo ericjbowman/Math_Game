@@ -57,6 +57,7 @@ function App(props) {
       /* Show title modal */
       gsap.to(titleModalRef.current, {opacity: 1, y: '-50%', top: '50%', duration: 0.3})
     }
+    console.log('request animation frame', window.requestAnimationFrame)
   }, [])
 
   useEffect(() => {
