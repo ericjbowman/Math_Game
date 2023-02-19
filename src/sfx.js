@@ -13,5 +13,6 @@ sfx.correctAns.volume = 0.1
 sfx.playerCrash.volume = 0.2
 sfx.newLvl.volume = 0.3
 sfx.music.volume = 0.2
+sfx.music.loop = true
 
 export default sfx
