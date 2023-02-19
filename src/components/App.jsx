@@ -237,13 +237,14 @@ function App(props) {
   /*-----------------------------------*/
 
   function onKeyPress(e) {
-    if (e.key === 'a') { // left
+    console.log('key press', e)
+    if (e.code === 'KeyA' || e.code === 'ArrowLeft') { // left (a or arrow)
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         left: true,
         right: false,
       })
-    } else if (e.key === 'd') { // right
+    } else if (e.code === 'KeyD' || e.code === 'ArrowRight') { // right (d or arrow)
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         left: false,
@@ -253,12 +254,12 @@ function App(props) {
   }
 
   function onKeyUp(e) {
-    if (e.key === 'a') { // left
+    if (e.code === 'KeyA' || e.code === 'ArrowLeft') { // left
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         left: false,
       })
-    } else if (e.key === 'd') { // right
+    } else if (e.code === 'KeyD' || e.code === 'ArrowRight') { // right
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         right: false,
