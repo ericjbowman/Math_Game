@@ -83,6 +83,7 @@ function App(props) {
   }
 
   function startGame() {
+    sfx.music.play()
     /* Starts continuous function that checks for player physics */
     movePlayer()
     /* Reset player stats */
@@ -175,10 +176,8 @@ function App(props) {
   let lastTime
 
   function movePlayer(time) {
-    console.log('move player', time, lastTime)
     const elapsedTime = time - lastTime
     if (elapsedTime >= props.defaultGame.frameRate) {
-      console.log('moving player')
       const isNotAtRightLimit =
         playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
       const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
@@ -200,6 +199,8 @@ function App(props) {
   }
 
   function stopPlayer() {
+    sfx.music.pause()
+    sfx.music.currentTime = 0;
     window.cancelAnimationFrame(animationId)
     setPlayerPhysics({
       ...playerPhysicsRef.current,
