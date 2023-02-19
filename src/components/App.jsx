@@ -177,7 +177,8 @@ function App(props) {
 
   function movePlayer(time) {
     const elapsedTime = time - lastTimeRef.current
-    if (!lastTime || elapsedTime >= props.defaultGame.frameRate) {
+    console.log('last time', lastTimeRef.current, 'elapsed time', elapsedTime)
+    if (!lastTimeRef.current || elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
         playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
       const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
