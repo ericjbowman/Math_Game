@@ -177,7 +177,6 @@ function App(props) {
   let lastTime
 
   function movePlayer(time) {
-    // console.log('move player', animationId)
     const elapsedTime = time - lastTime
     if (elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
@@ -197,7 +196,12 @@ function App(props) {
     }
 
     lastTime = time
-    animationId = window.requestAnimationFrame(movePlayer)
+    const raf =
+      window.requestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      window.oRequestAnimationFrame
+    animationId = raf(movePlayer)
   }
 
   function stopPlayer() {
