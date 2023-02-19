@@ -39,11 +39,13 @@ function App(props) {
     right: false,
   })
   const [playerLane, _setPlayerLane] = useState(0)
+  const [lastTime, _setLastTime] = useState(null)
   const playerPhysicsRef = useRef(playerPhysics)
   const gameplayContainerRef = useRef()
   const mathProblemRef = useRef(props.mathProblem)
   const playerStatsRef = useRef(props.playerStats)
   const playerLaneRef = useRef(0)
+  const lastTimeRef = useRef()
   const wallRef = useRef()
   const gameOverModalRef = useRef()
   const titleModalRef = useRef()
@@ -173,17 +175,13 @@ function App(props) {
     tlRef.current = tl
   }
 
-  let lastTime
-
   function movePlayer(time) {
-    const elapsedTime = time - lastTime
-    if (elapsedTime >= props.defaultGame.frameRate) {
+    const elapsedTime = time - lastTimeRef.current
+    if (!lastTime || elapsedTime >= props.defaultGame.frameRate) {
       const isNotAtRightLimit =
         playerPhysicsRef.current.x < gameplayContainerRef.current.offsetWidth - playerStyle.width
-      console.log('gameplay container width', gameplayContainerRef.current.offsetWidth)
       const isNotAtLeftLimit = playerPhysicsRef.current.x > 0
       if (playerPhysicsRef.current.right && isNotAtRightLimit) {
-        console.log('moving player right', playerPhysicsRef.current.x, props.defaultGame.playerSpeed)
         setPlayerPhysics({
           ...playerPhysicsRef.current,
           x: playerPhysicsRef.current.x + props.defaultGame.playerSpeed
@@ -196,7 +194,7 @@ function App(props) {
       }
     }
 
-    lastTime = time
+    setLastTime(time)
     const raf =
       window.requestAnimationFrame ||
       window.mozRequestAnimationFrame ||
@@ -241,16 +239,16 @@ function App(props) {
     playerLaneRef.current = data
     _setPlayerLane(data)
   }
+
+  const setLastTime = (data) => {
+    lastTimeRef.current = data
+    _setLastTime(data)
+  }
   /*-----------------------------------*/
 
-  useEffect(() => {
-    console.log('player physics', playerPhysicsRef.current)
-  }, [playerPhysicsRef.current])
 
   function onKeyPress(e) {
-    console.log('key press', e, e.code)
     if (e.code === 'KeyA' || e.code === 'ArrowLeft') { // left (a or arrow)
-      console.log('setting player physics')
       setPlayerPhysics({
         ...playerPhysicsRef.current,
         left: true,
