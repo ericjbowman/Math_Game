@@ -193,9 +193,9 @@ function App(props) {
           x: playerPhysicsRef.current.x - props.defaultGame.playerSpeed
         })
       }
+      setLastTime(time)
     }
 
-    setLastTime(time)
     const raf =
       window.requestAnimationFrame ||
       window.mozRequestAnimationFrame ||
