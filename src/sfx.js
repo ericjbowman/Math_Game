@@ -2,7 +2,7 @@ const sfx = {
   correctAns: new Audio('Correct_Ans_2_Raw.mp3'),
   playerCrash: new Audio('Crash_Raw.mp3'),
   newLvl: new Audio('New_Lvl_Raw.mp3'),
-  music: new Audio('Math_Game_Music_Loop.mp3'),
+  music: new Audio('Math_Game_Music.wav'),
   // correctAns: new Audio({
   //   volume: 0.5,
   //   src: 'Correct_Ans_2_Raw.mp3',
